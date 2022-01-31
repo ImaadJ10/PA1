@@ -141,8 +141,15 @@ ImgList::~ImgList() {
 *   x dimension.
 */
 unsigned int ImgList::GetDimensionX() const {
-  // replace the following line with your implementation
-  return -1;
+  int count = 0;
+  ImgNode* curr = northwest;
+
+  while (curr != NULL) {
+    count++;
+    curr = curr->east;
+  }
+
+  return count;
 }
 
 /*
@@ -154,8 +161,15 @@ unsigned int ImgList::GetDimensionX() const {
 *   y dimension.
 */
 unsigned int ImgList::GetDimensionY() const {
-  // replace the following line with your implementation
-  return -1;
+  int count = 0;
+  ImgNode* curr = northwest;
+
+  while (curr != NULL) {
+    count++;
+    curr = curr->south;
+  }
+
+  return count;
 }
 
 /*
@@ -166,8 +180,15 @@ unsigned int ImgList::GetDimensionY() const {
 *   x dimension.
 */
 unsigned int ImgList::GetDimensionFullX() const {
-  // replace the following line with your implementation
-  return -1;
+  int count = 0;
+  ImgNode* curr = northwest;
+
+  while (curr != NULL) {
+    count += 1 + curr->skipright;
+    curr = curr->east;
+  }
+
+  return count;
 }
 
 /*
@@ -299,7 +320,19 @@ void ImgList::Carve(unsigned int rounds, int selectionmode) {
 *       member attributes have values consistent with an empty list.
 */
 void ImgList::Clear() {
-  // add your implementation here
+  ImgNode* curr = northwest;
+  ImgNode* nextX = northwest;
+
+  for (int x = 0; x < GetDimensionX(); x++) {
+    if (x > 0) {
+      curr = nextX->east;
+    }
+    for (int y = 0; y < GetDimensionY(); y++) {
+        ImgNode* next = curr->south;
+        delete curr;
+        curr = next;
+    }
+  }
   
 }
 
