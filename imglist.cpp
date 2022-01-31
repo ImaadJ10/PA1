@@ -327,7 +327,7 @@ void ImgList::Clear() {
     if (x > 0) {
       curr = nextX->east;
     }
-    for (int y = 0; y < GetDimensionY(); y++) {
+    while (curr != NULL) {
         ImgNode* next = curr->south;
         delete curr;
         curr = next;
