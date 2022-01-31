@@ -40,7 +40,8 @@ double HueDiff(double hue1, double hue2) {
 */
 ImgList::ImgList() {
   // set appropriate values for all member attributes here
-  
+  northwest = NULL;
+  southeast = NULL;
 }
 
 /*
@@ -49,7 +50,46 @@ ImgList::ImgList() {
 */
 ImgList::ImgList(PNG& img) {
   // build the linked node structure and set the member attributes appropriately
-  
+  ImgNode* last_x;
+  ImgNode* last_y;
+
+  for (int x = 0; x < img.width(); x++) {
+    if (x > 1) {
+      last_x = northwest;
+      for (int i = 1; i < x; i++) {
+        last_x = last_x->east;
+      }
+    }
+    for (int y = 0; y < img.height(); y++) {
+      if (x == 0 && y == 0) { 
+        northwest = new ImgNode();
+        northwest->colour = *img.getPixel(0, 0);
+        ImgNode* last_x = northwest;
+        ImgNode* last_y = northwest;
+      } else if (x == 0) {
+        ImgNode* curr = new ImgNode();
+        curr->colour = *img.getPixel(x, y);
+        last_y->south = curr;
+        curr->north = last_y;
+        last_y = curr;
+      } else if (y == 0) {
+        ImgNode* curr = new ImgNode();
+        curr->colour = *img.getPixel(x, y);
+        last_x->east = curr;
+        curr->west = last_x;
+        last_y = curr;
+      } else {
+        ImgNode* curr = new ImgNode();
+        curr->colour = *img.getPixel(x, y);
+        last_x->east = curr;
+        curr->west = last_x;
+        last_y->south = curr;
+        curr->north = last_y;
+        last_x = last_x->south;
+        last_y = curr;
+      }
+    }
+  }
 }
 
 /*
