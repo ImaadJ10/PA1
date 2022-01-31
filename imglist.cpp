@@ -191,8 +191,35 @@ unsigned int ImgList::GetDimensionFullX() const {
 */
 ImgNode* ImgList::SelectNode(ImgNode* rowstart, int selectionmode) {
   // add your implementation below
-  
-  return NULL;
+  switch (selectionmode) {
+    case 0:
+      ImgNode* curr = rowstart->east;
+      ImgNode* minLum = curr;
+      while (curr->east != NULL) {
+        if (curr->colour.l < minLum->colour.l) {
+          minLum = curr;
+        }
+        curr = curr->east;
+      }
+      return minLum;
+
+    case 1:
+      ImgNode* curr = rowstart->east;
+      ImgNode* minHueDiff = curr;
+      double minHueDiffValue = HueDiff(minHueDiff->colour.h, minHueDiff->west->colour.h) + HueDiff(minHueDiff->colour.h, minHueDiff->east->colour.h);
+      while (curr->east != NULL) {
+        double currHueDiffValue = HueDiff(curr->colour.h, curr->west->colour.h) + HueDiff(curr->colour.h, curr->east->colour.h);
+        if (currHueDiffValue < minHueDiffValue) {
+          minHueDiff = curr;
+          minHueDiffValue = currHueDiffValue;
+        }
+        curr = curr->east;
+      }
+      return minHueDiff;
+
+    default:
+      return NULL;
+  }
 }
 
 /*
