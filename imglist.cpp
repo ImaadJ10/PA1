@@ -28,7 +28,7 @@
 *      two pixels with hues 5 and 355 differ by 10.
 */
 double HueDiff(double hue1, double hue2) {
-  return fmin(fabs(hue1 - hue2), fabs(hue2 + 360 - hue1));
+  return fmin(fabs(hue1 - hue2), fabs(360 + fmin(hue1, hue2) - fmax(hue1, hue2)));
 }
 
 /*********************
