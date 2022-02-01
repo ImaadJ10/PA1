@@ -325,7 +325,8 @@ void ImgList::Clear() {
 
   for (int x = 0; x < GetDimensionX(); x++) {
     if (x > 0) {
-      curr = nextX->east;
+      nextX = nextX->east;
+      curr = nextX;
     }
     while (curr != NULL) {
         ImgNode* next = curr->south;
