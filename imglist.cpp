@@ -408,7 +408,7 @@ void ImgList::Carve(int selectionmode) {
       north->south = south;
       north->skipdown++;
     }
-    
+
     if (south != NULL) {
       south->north = north;
       south->skipup++;
@@ -456,13 +456,13 @@ void ImgList::Carve(unsigned int rounds, int selectionmode) {
 */
 void ImgList::Clear() {
   ImgNode* curr = northwest;
-  ImgNode* nextX = northwest;
+  ImgNode* nextX = northwest->east;
   unsigned int width = this->GetDimensionX();
 
   for (unsigned int x = 0; x < width; x++) {
     if (x > 0) {
-      nextX = nextX->east;
       curr = nextX;
+      nextX = nextX->east;
     }
     while (curr != NULL) {
         ImgNode* next = curr->south;
@@ -470,6 +470,9 @@ void ImgList::Clear() {
         curr = next;
     }
   }
+
+  northwest = NULL;
+  southeast = NULL;
 }
 
 /* ************************
