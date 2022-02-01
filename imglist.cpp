@@ -56,7 +56,7 @@ ImgList::ImgList(PNG& img) {
   for (unsigned int x = 0; x < img.width(); x++) {
     if (x > 1) {
       last_x = northwest;
-      for (int i = 1; i < x; i++) {
+      for (unsigned int i = 1; i < x; i++) {
         last_x = last_x->east;
       }
     }
@@ -64,8 +64,8 @@ ImgList::ImgList(PNG& img) {
       if (x == 0 && y == 0) { 
         northwest = new ImgNode();
         northwest->colour = *img.getPixel(0, 0);
-        ImgNode* last_x = northwest;
-        ImgNode* last_y = northwest;
+        last_x = northwest;
+        last_y = northwest;
       } else if (x == 0) {
         ImgNode* curr = new ImgNode();
         curr->colour = *img.getPixel(x, y);
@@ -161,11 +161,22 @@ unsigned int ImgList::GetDimensionX() const {
 *   y dimension.
 */
 unsigned int ImgList::GetDimensionY() const {
+  // int count = 0;
+  // ImgNode* curr = northwest;
+
+  // while (curr != NULL) {
+  //   count++;
+  //   curr = curr->south;
+  // }
+
+  // return count;
+
+  
   int count = 0;
   ImgNode* curr = northwest;
 
   while (curr != NULL) {
-    count++;
+    count += 1 + curr->skipdown;
     curr = curr->south;
   }
 
@@ -271,10 +282,10 @@ ImgNode* ImgList::SelectNode(ImgNode* rowstart, int selectionmode) {
 */
 PNG ImgList::Render(bool fillgaps, int fillmode) const {
   // Add/complete your implementation below
-  
-  PNG outpng; //this will be returned later. Might be a good idea to resize it at some point.
+  PNG* outpng; //this will be returned later. Might be a good idea to resize it at some point.
 
   if (fillgaps) {
+    outpng = new PNG(GetDimensionFullX(), GetDimensionY());
     switch (fillmode) {
       case 0: {
         ImgNode* currNode = northwest;
@@ -288,7 +299,7 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
             count = currNode->skipright;
           }
           for (unsigned int y = 0; y < GetDimensionY(); y++) {
-            HSLAPixel* currPixel = outpng.getPixel(x, y);
+            HSLAPixel* currPixel = outpng->getPixel(x, y);
             *currPixel = currNode->colour;
             currNode = currNode->south;
           }
@@ -309,7 +320,7 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
             count = currNode->skipright;
           }
           for (unsigned int y = 0; y < GetDimensionY(); y++) {
-            HSLAPixel* currPixel = outpng.getPixel(x, y);
+            HSLAPixel* currPixel = outpng->getPixel(x, y);
             if (nextX->east != NULL) {
               ImgNode* nextNode = nextX->east;
               currPixel->h = HueDiff(currNode->colour.h, nextNode->colour.h);
@@ -325,10 +336,11 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
       }
 
       default: {
-        return outpng;
+        return *outpng;
       }
     }
   } else {
+    outpng = new PNG(GetDimensionX(), GetDimensionY());
     ImgNode* currNode = northwest;
     ImgNode* nextX = northwest;
 
@@ -338,14 +350,14 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
         currNode = nextX;
       }
       for (unsigned int y = 0; y < GetDimensionY(); y++) {
-        HSLAPixel* currPixel = outpng.getPixel(x, y);
+        HSLAPixel* currPixel = outpng->getPixel(x, y);
         *currPixel = currNode->colour;
         currNode = currNode->south;
       }
     }
   }
   
-  return outpng;
+  return *outpng;
 }
 
 /************
@@ -424,7 +436,7 @@ void ImgList::Clear() {
   ImgNode* curr = northwest;
   ImgNode* nextX = northwest;
 
-  for (int x = 0; x < GetDimensionX(); x++) {
+  for (unsigned int x = 0; x < GetDimensionX(); x++) {
     if (x > 0) {
       nextX = nextX->east;
       curr = nextX;
