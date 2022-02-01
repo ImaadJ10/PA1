@@ -276,64 +276,68 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
 
   if (fillgaps) {
     switch (fillmode) {
-      case 0: 
-      ImgNode* currNode = northwest;
-      ImgNode* nextX = northwest;
-      int count = currNode->skipright;
+      case 0: {
+        ImgNode* currNode = northwest;
+        ImgNode* nextX = northwest;
+        int count = currNode->skipright;
 
-      for (int x = 0; x < GetDimensionFullX(); x++) {
-        if (x > 0 && count == 0) {
-          nextX = nextX->east;
-          currNode = nextX;
-          count = currNode->skipright;
-        }
-        for (int y = 0; y < GetDimensionY(); y++) {
-          HSLAPixel* currPixel = outpng.getPixel(x, y);
-          *currPixel = currNode->colour;
-          currNode = currNode->south;
-        }
-        count--;
-      }
-
-      case 1:
-      ImgNode* currNode = northwest;
-      ImgNode* nextX = northwest;
-      int count = currNode->skipright;
-      
-      for (int x = 0; x < GetDimensionFullX(); x++) {
-        if (x > 0 && count == 0) {
-          nextX = nextX->east;
-          currNode = nextX;
-          count = currNode->skipright;
-        }
-        for (int y = 0; y < GetDimensionY(); y++) {
-          HSLAPixel* currPixel = outpng.getPixel(x, y);
-          if (nextX->east != NULL) {
-            ImgNode* nextNode = nextX->east;
-            currPixel->h = HueDiff(currNode->colour.h, nextNode->colour.h);
-          } else {
-            *currPixel = currNode->colour;
+        for (unsigned int x = 0; x < GetDimensionFullX(); x++) {
+          if (x > 0 && count == 0) {
+            nextX = nextX->east;
+            currNode = nextX;
+            count = currNode->skipright;
           }
-          
-          currNode = currNode->south;
+          for (unsigned int y = 0; y < GetDimensionY(); y++) {
+            HSLAPixel* currPixel = outpng.getPixel(x, y);
+            *currPixel = currNode->colour;
+            currNode = currNode->south;
+          }
+          count--;
         }
-        count--;
+        break;
       }
 
-      default:
-      return outpng;
-    }
+      case 1: {
+        ImgNode* currNode = northwest;
+        ImgNode* nextX = northwest;
+        int count = currNode->skipright;
+        
+        for (unsigned int x = 0; x < GetDimensionFullX(); x++) {
+          if (x > 0 && count == 0) {
+            nextX = nextX->east;
+            currNode = nextX;
+            count = currNode->skipright;
+          }
+          for (unsigned int y = 0; y < GetDimensionY(); y++) {
+            HSLAPixel* currPixel = outpng.getPixel(x, y);
+            if (nextX->east != NULL) {
+              ImgNode* nextNode = nextX->east;
+              currPixel->h = HueDiff(currNode->colour.h, nextNode->colour.h);
+            } else {
+              *currPixel = currNode->colour;
+            }
+            
+            currNode = currNode->south;
+          }
+          count--;
+        }
+        break;
+      }
 
+      default: {
+        return outpng;
+      }
+    }
   } else {
     ImgNode* currNode = northwest;
     ImgNode* nextX = northwest;
 
-    for (int x = 0; x < GetDimensionX(); x++) {
+    for (unsigned int x = 0; x < GetDimensionX(); x++) {
       if (x > 0) {
         nextX = nextX->east;
         currNode = nextX;
       }
-      for (int y = 0; y < GetDimensionY(); y++) {
+      for (unsigned int y = 0; y < GetDimensionY(); y++) {
         HSLAPixel* currPixel = outpng.getPixel(x, y);
         *currPixel = currNode->colour;
         currNode = currNode->south;
