@@ -381,7 +381,7 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
 */
 void ImgList::Carve(int selectionmode) {
   ImgNode* rowStart = this->northwest;
-  while (rowStart->south != NULL) {
+  while (rowStart != NULL && rowStart->south != NULL) {
     ImgNode* curr = SelectNode(rowStart, selectionmode);
     ImgNode* east = curr->east;
     ImgNode* west = curr->west;
@@ -389,13 +389,20 @@ void ImgList::Carve(int selectionmode) {
     ImgNode* south = curr->south;
 
     east->west = west;
-    west->east = east;
-    north->south = south;
-    south->north = north;
     east->skipleft++;
+
+    west->east = east;
     west->skipright++;
-    south->skipup++;
-    north->skipdown++;
+
+    if (north != NULL) {
+      north->south = south;
+      north->skipdown++;
+    }
+    
+    if (south != NULL) {
+      south->north = north;
+      south->skipup++;
+    }
 
     rowStart = rowStart->south;
     delete curr;
@@ -440,8 +447,9 @@ void ImgList::Carve(unsigned int rounds, int selectionmode) {
 void ImgList::Clear() {
   ImgNode* curr = northwest;
   ImgNode* nextX = northwest;
+  unsigned int width = this->GetDimensionX();
 
-  for (unsigned int x = 0; x < GetDimensionX(); x++) {
+  for (unsigned int x = 0; x < width; x++) {
     if (x > 0) {
       nextX = nextX->east;
       curr = nextX;
