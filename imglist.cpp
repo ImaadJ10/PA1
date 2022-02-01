@@ -290,20 +290,25 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
       case 0: {
         ImgNode* currNode = northwest;
         ImgNode* nextX = northwest;
-        int count = currNode->skipright;
+        int countX = currNode->skipright;
+        int countY = currNode->skipdown;
 
         for (unsigned int x = 0; x < GetDimensionFullX(); x++) {
-          if (x > 0 && count == 0) {
+          if (x > 0 && countX == 0) {
             nextX = nextX->east;
             currNode = nextX;
-            count = currNode->skipright;
+            countX = currNode->skipright;
           }
           for (unsigned int y = 0; y < GetDimensionY(); y++) {
             HSLAPixel* currPixel = outpng->getPixel(x, y);
             *currPixel = currNode->colour;
-            currNode = currNode->south;
+            if (countY == 0) {
+              currNode = currNode->south;
+              countY = currNode->skipdown;
+            }
+            countY--;
           }
-          count--;
+          countX--;
         }
         break;
       }
@@ -311,13 +316,14 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
       case 1: {
         ImgNode* currNode = northwest;
         ImgNode* nextX = northwest;
-        int count = currNode->skipright;
+        int countX = currNode->skipright;
+        int countY = currNode->skipdown;
         
         for (unsigned int x = 0; x < GetDimensionFullX(); x++) {
-          if (x > 0 && count == 0) {
+          if (x > 0 && countX == 0) {
             nextX = nextX->east;
             currNode = nextX;
-            count = currNode->skipright;
+            countX = currNode->skipright;
           }
           for (unsigned int y = 0; y < GetDimensionY(); y++) {
             HSLAPixel* currPixel = outpng->getPixel(x, y);
@@ -328,9 +334,13 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
               *currPixel = currNode->colour;
             }
             
-            currNode = currNode->south;
+            if (countY == 0) {
+              currNode = currNode->south;
+              countY = currNode->skipdown;
+            }
+            countY--;
           }
-          count--;
+          countX--;
         }
         break;
       }
