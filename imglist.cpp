@@ -53,14 +53,14 @@ ImgList::ImgList(PNG& img) {
   ImgNode* last_x;
   ImgNode* last_y;
 
-  for (int x = 0; x < img.width(); x++) {
+  for (unsigned int x = 0; x < img.width(); x++) {
     if (x > 1) {
       last_x = northwest;
       for (int i = 1; i < x; i++) {
         last_x = last_x->east;
       }
     }
-    for (int y = 0; y < img.height(); y++) {
+    for (unsigned int y = 0; y < img.height(); y++) {
       if (x == 0 && y == 0) { 
         northwest = new ImgNode();
         northwest->colour = *img.getPixel(0, 0);
@@ -213,7 +213,7 @@ unsigned int ImgList::GetDimensionFullX() const {
 ImgNode* ImgList::SelectNode(ImgNode* rowstart, int selectionmode) {
   // add your implementation below
   switch (selectionmode) {
-    case 0:
+    case 0: {
       ImgNode* curr = rowstart->east;
       ImgNode* minLum = curr;
       while (curr->east != NULL) {
@@ -223,8 +223,9 @@ ImgNode* ImgList::SelectNode(ImgNode* rowstart, int selectionmode) {
         curr = curr->east;
       }
       return minLum;
+    }
 
-    case 1:
+    case 1: {
       ImgNode* curr = rowstart->east;
       ImgNode* minHueDiff = curr;
       double minHueDiffValue = HueDiff(minHueDiff->colour.h, minHueDiff->west->colour.h) + HueDiff(minHueDiff->colour.h, minHueDiff->east->colour.h);
@@ -237,9 +238,11 @@ ImgNode* ImgList::SelectNode(ImgNode* rowstart, int selectionmode) {
         curr = curr->east;
       }
       return minHueDiff;
+    }
 
-    default:
+    default: {
       return NULL;
+    }
   }
 }
 
@@ -273,7 +276,7 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
 
   if (fillgaps) {
     switch (fillmode) {
-      case 0:
+      case 0: 
       ImgNode* currNode = northwest;
       ImgNode* nextX = northwest;
       int count = currNode->skipright;
