@@ -343,6 +343,7 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
     outpng = new PNG(GetDimensionX(), GetDimensionY());
     ImgNode* currNode = northwest;
     ImgNode* nextX = northwest;
+    int count = currNode->skipdown;
 
     for (unsigned int x = 0; x < GetDimensionX(); x++) {
       if (x > 0) {
@@ -352,7 +353,11 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
       for (unsigned int y = 0; y < GetDimensionY(); y++) {
         HSLAPixel* currPixel = outpng->getPixel(x, y);
         *currPixel = currNode->colour;
-        currNode = currNode->south;
+        if (count == 0) {
+          currNode = currNode->south;
+          count = currNode->skipdown;
+        }
+        count--;
       }
     }
   }
