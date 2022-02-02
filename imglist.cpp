@@ -320,7 +320,7 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
             HSLAPixel* currPixel = outpng.getPixel(x, y);
             if (nextX->east != NULL) {
               ImgNode* nextNode = nextX->east;
-              currPixel->h = ((fmin(currNode->colour.h, nextNode->colour.h) - (HueDiff(currNode->colour.h, nextNode->colour.h))) / 2) % 360;
+              currPixel->h = fmod(fmin(currNode->colour.h, nextNode->colour.h) - (HueDiff(currNode->colour.h, nextNode->colour.h)) / 2, 360);
             } else {
               *currPixel = currNode->colour;
             }
