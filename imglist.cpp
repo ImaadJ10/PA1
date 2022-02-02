@@ -306,7 +306,7 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
       case 1: {
         ImgNode* currNode = northwest;
         ImgNode* nextY = northwest;
-        unsigned int count = 0;
+        unsigned int count = currNode->skipright;
 
         for (unsigned int y = 0; y < GetDimensionY(); y++) {
           if (y > 0) {
