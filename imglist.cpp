@@ -377,12 +377,17 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
 */
 void ImgList::Carve(int selectionmode) {
   ImgNode* rowStart = this->northwest;
-  while (rowStart != NULL && rowStart->south != NULL) {
-    ImgNode* curr = SelectNode(rowStart, selectionmode);
-    ImgNode* east = curr->east;
-    ImgNode* west = curr->west;
-    ImgNode* north = curr->north;
-    ImgNode* south = curr->south;
+  ImgNode* curr;
+  ImgNode* east;
+  ImgNode* west;
+  ImgNode* north;
+  ImgNode* south;
+  while (rowStart != NULL) {
+    curr = SelectNode(rowStart, selectionmode);
+    east = curr->east;
+    west = curr->west;
+    north = curr->north;
+    south = curr->south;
 
     east->west = west;
     east->skipleft += curr->skipleft + 1;
