@@ -316,10 +316,19 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
           }
           for (unsigned int x = 0; x < GetDimensionFullX(); x++) {
             HSLAPixel* currPixel = outpng.getPixel(x, y);
-            if (count == currNode->skipright) {
+            if (count == 0 && currNode->skipright == 0 && currNode->east != NULL) {
+              *currPixel = currNode->colour;
+              currNode = currNode->east;
+              count = currNode->skipright;
+            } else if (count == currNode->skipright) {
               *currPixel = currNode->colour;
               count--;
             } else if (count <= 0 && currNode->east != NULL) {
+              ImgNode* nextNode = currNode->east;
+              currPixel->h = fmod(currNode->colour.h + nextNode->colour.h, 360) / 2.0;
+              currPixel->s = (currNode->colour.s + nextNode->colour.s) / 2.0;
+              currPixel->l = (currNode->colour.l + nextNode->colour.l) / 2.0;
+              currPixel->a = (currNode->colour.a + nextNode->colour.a) / 2.0;
               currNode = currNode->east;
               count = currNode->skipright;
             } else {
