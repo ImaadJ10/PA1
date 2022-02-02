@@ -446,24 +446,26 @@ void ImgList::Carve(unsigned int rounds, int selectionmode) {
 *       member attributes have values consistent with an empty list.
 */
 void ImgList::Clear() {
-  ImgNode* curr = northwest;
-  ImgNode* nextX = northwest->east;
-  unsigned int width = this->GetDimensionX();
+  if (northwest != NULL) {
+    ImgNode* curr = northwest;
+    ImgNode* nextX = northwest->east;
+    unsigned int width = this->GetDimensionX();
 
-  for (unsigned int x = 0; x < width; x++) {
-    if (x > 0) {
-      curr = nextX;
-      nextX = nextX->east;
+    for (unsigned int x = 0; x < width; x++) {
+      if (x > 0) {
+        curr = nextX;
+        nextX = nextX->east;
+      }
+      while (curr != NULL) {
+          ImgNode* next = curr->south;
+          delete curr;
+          curr = next;
+      }
     }
-    while (curr != NULL) {
-        ImgNode* next = curr->south;
-        delete curr;
-        curr = next;
-    }
+
+    northwest = NULL;
+    southeast = NULL;
   }
-
-  northwest = NULL;
-  southeast = NULL;
 }
 
 /* ************************
