@@ -325,18 +325,18 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
               count--;
             } else if (count <= 0 && currNode->east != NULL) {
               ImgNode* nextNode = currNode->east;
-              currPixel->h = fmod(currNode->colour.h + nextNode->colour.h, 360) / 2.0;
-              currPixel->s = (currNode->colour.s + nextNode->colour.s) / 2.0;
-              currPixel->l = (currNode->colour.l + nextNode->colour.l) / 2.0;
-              currPixel->a = (currNode->colour.a + nextNode->colour.a) / 2.0;
+              currPixel->h = fmod(currNode->colour.h + nextNode->colour.h, 360) / 2;
+              currPixel->s = (currNode->colour.s + nextNode->colour.s) / 2;
+              currPixel->l = (currNode->colour.l + nextNode->colour.l) / 2;
+              currPixel->a = (currNode->colour.a + nextNode->colour.a) / 2;
               currNode = currNode->east;
               count = currNode->skipright;
             } else if (currNode->east != NULL) {
               ImgNode* nextNode = currNode->east;
-              currPixel->h = fmod(currNode->colour.h + nextNode->colour.h, 360) / 2.0;
-              currPixel->s = (currNode->colour.s + nextNode->colour.s) / 2.0;
-              currPixel->l = (currNode->colour.l + nextNode->colour.l) / 2.0;
-              currPixel->a = (currNode->colour.a + nextNode->colour.a) / 2.0;
+              currPixel->h = fmod(currNode->colour.h + nextNode->colour.h, 360) / 2;
+              currPixel->s = (currNode->colour.s + nextNode->colour.s) / 2;
+              currPixel->l = (currNode->colour.l + nextNode->colour.l) / 2;
+              currPixel->a = (currNode->colour.a + nextNode->colour.a) / 2;
               count--;
             }
           }
