@@ -280,26 +280,21 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
     switch (fillmode) {
       case 0: {
         ImgNode* currNode = northwest;
-        ImgNode* nextX = northwest;
-        int countX = currNode->skipright;
+        ImgNode* nextY = northwest;
         int countY = currNode->skipdown;
 
-        for (unsigned int x = 0; x < GetDimensionFullX(); x++) {
-          if (x > 0 && countX == 0) {
-            nextX = nextX->east;
-            currNode = nextX;
-            countX = currNode->skipright;
+        for (unsigned int y = 0; y < GetDimensionY(); y++) {
+          if (y > 0 && countY == 0) {
+            nextY = nextY->south;
+            currNode = nextY;
+            countY = currNode->skipdown;
           }
-          for (unsigned int y = 0; y < GetDimensionY(); y++) {
+          for (unsigned int x = 0; x < GetDimensionX(); x++) {
             HSLAPixel* currPixel = outpng.getPixel(x, y);
             *currPixel = currNode->colour;
-            if (countY == 0) {
-              currNode = currNode->south;
-              countY = currNode->skipdown;
-            }
-            countY--;
+            currNode = currNode->east;
           }
-          countX--;
+          countY--;
         }
         break;
       }
