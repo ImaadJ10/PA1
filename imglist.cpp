@@ -306,7 +306,7 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
       case 1: {
         ImgNode* currNode = northwest;
         ImgNode* nextY = northwest;
-        int count = 0;
+        unsigned int count = 0;
 
         for (unsigned int y = 0; y < GetDimensionY(); y++) {
           if (y > 0) {
@@ -325,13 +325,13 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
               count--;
             } else if (count <= 0 && currNode->east != NULL) {
               ImgNode* nextNode = currNode->east;
-              currPixel->h = fmod(currNode->colour.h + nextNode->colour.h, 360) / 2.0;
+              currPixel->h = fmin(fmod(currNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360), fmod(nextNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360));
               currPixel->s = (currNode->colour.s + nextNode->colour.s) / 2.0;
               currPixel->l = (currNode->colour.l + nextNode->colour.l) / 2.0;
               currPixel->a = (currNode->colour.a + nextNode->colour.a) / 2.0;
               currNode = currNode->east;
               count = currNode->skipright;
-            } else {
+            } else if (currNode->east != NULL) {
               ImgNode* nextNode = currNode->east;
               currPixel->h = fmod(currNode->colour.h + nextNode->colour.h, 360) / 2.0;
               currPixel->s = (currNode->colour.s + nextNode->colour.s) / 2.0;
