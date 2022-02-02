@@ -281,6 +281,7 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
       case 0: {
         ImgNode* currNode = northwest;
         ImgNode* nextY = northwest;
+        int countX = currNode->skipright;
         int countY = currNode->skipdown;
 
         for (unsigned int y = 0; y < GetDimensionY(); y++) {
@@ -289,10 +290,14 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
             currNode = nextY;
             countY = currNode->skipdown;
           }
-          for (unsigned int x = 0; x < GetDimensionX(); x++) {
+          for (unsigned int x = 0; x < GetDimensionFullX(); x++) {
             HSLAPixel* currPixel = outpng.getPixel(x, y);
             *currPixel = currNode->colour;
-            currNode = currNode->east;
+            if (countX == 0) {
+              currNode = currNode->east;
+              countX = currNode->skipright;
+            }
+            countX--;
           }
           countY--;
         }
@@ -315,7 +320,7 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
             HSLAPixel* currPixel = outpng.getPixel(x, y);
             if (nextX->east != NULL) {
               ImgNode* nextNode = nextX->east;
-              currPixel->h = fmod(fmin(currNode->colour.h, nextNode->colour.h) + (HueDiff(currNode->colour.h, nextNode->colour.h)) / 2, 360);
+              currPixel->h = fmod(((fmin(currNode->colour.h, nextNode->colour.h) - (HueDiff(currNode->colour.h, nextNode->colour.h))) / 2), 360);
             } else {
               *currPixel = currNode->colour;
             }
@@ -338,23 +343,21 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
   } else {
     outpng = PNG(GetDimensionX(), GetDimensionY());
     ImgNode* currNode = northwest;
-    ImgNode* nextX = northwest;
+    ImgNode* nextY = northwest;
     int count = currNode->skipdown;
 
-    for (unsigned int x = 0; x < GetDimensionX(); x++) {
-      if (x > 0) {
-        nextX = nextX->east;
-        currNode = nextX;
+    for (unsigned int y = 0; y < GetDimensionY(); y++) {
+      if (y > 0 && count == 0) {
+        nextY = nextY->south;
+        currNode = nextY;
+        count = currNode->skipdown;
       }
-      for (unsigned int y = 0; y < GetDimensionY(); y++) {
+      for (unsigned int x = 0; x < GetDimensionX(); x++) {
         HSLAPixel* currPixel = outpng.getPixel(x, y);
         *currPixel = currNode->colour;
-        if (count == 0) {
-          currNode = currNode->south;
-          count = currNode->skipdown;
-        }
-        count--;
+        currNode = currNode->east;
       }
+      count--;
     }
   }
   
@@ -446,26 +449,24 @@ void ImgList::Carve(unsigned int rounds, int selectionmode) {
 *       member attributes have values consistent with an empty list.
 */
 void ImgList::Clear() {
-  if (northwest != NULL) {
-    ImgNode* curr = northwest;
-    ImgNode* nextX = northwest->east;
-    unsigned int width = this->GetDimensionX();
+  ImgNode* curr = northwest;
+  ImgNode* nextX = northwest->east;
+  unsigned int width = this->GetDimensionX();
 
-    for (unsigned int x = 0; x < width; x++) {
-      if (x > 0) {
-        curr = nextX;
-        nextX = nextX->east;
-      }
-      while (curr != NULL) {
-          ImgNode* next = curr->south;
-          delete curr;
-          curr = next;
-      }
+  for (unsigned int x = 0; x < width; x++) {
+    if (x > 0) {
+      curr = nextX;
+      nextX = nextX->east;
     }
-
-    northwest = NULL;
-    southeast = NULL;
+    while (curr != NULL) {
+        ImgNode* next = curr->south;
+        delete curr;
+        curr = next;
+    }
   }
+
+  northwest = NULL;
+  southeast = NULL;
 }
 
 /* ************************
