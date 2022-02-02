@@ -287,6 +287,7 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
           if (y > 0) {
             nextY = nextY->south;
             currNode = nextY;
+            count = currNode->skipright;
           }
           for (unsigned int x = 0; x < GetDimensionFullX(); x++) {
             HSLAPixel* currPixel = outpng.getPixel(x, y);
@@ -294,8 +295,9 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
             if (count <= 0 && currNode->east != NULL) {
               currNode = currNode->east;
               count = currNode->skipright;
+            } else {
+              count--;
             }
-            count--;
           }
         }
         break;
@@ -304,23 +306,32 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
       case 1: {
         ImgNode* currNode = northwest;
         ImgNode* nextY = northwest;
-        int countX = currNode->skipright;
+        int count = 0;
         
-        for (unsigned int y = 0; y < GetDimensionFullX(); y++) {
+        for (unsigned int y = 0; y < GetDimensionY(); y++) {
           if (y > 0) {
             nextY = nextY->south;
             currNode = nextY;
+            count = 0;
           }
-          for (unsigned int x = 0; x < GetDimensionY(); x++) {
+          for (unsigned int x = 0; x < GetDimensionFullX(); x++) {
             HSLAPixel* currPixel = outpng.getPixel(x, y);
-            ImgNode* nextNode = currNode->east;
-            currPixel->h = fmod(((fmin(currNode->colour.h, nextNode->colour.h) - (HueDiff(currNode->colour.h, nextNode->colour.h))) / 2), 360);
-            
-            if (countX == 0) {
-              currNode = currNode->east;
-              countX = currNode->skipright;
+            if (count > 0) {
+              ImgNode* nextNode = currNode->east;
+              currPixel->h = fmod(currNode->colour.h + nextNode->colour.h, 360) / 2.0;
+              currPixel->s = (currNode->colour.s + nextNode->colour.s) / 2.0;
+              currPixel->l = (currNode->colour.l + nextNode->colour.l) / 2.0;
+              currPixel->a = (currNode->colour.a + nextNode->colour.a) / 2.0;
+            } else {
+              *currPixel = currNode->colour;
             }
-            countX--;
+            
+            if (count <= 0 && currNode->east != NULL) {
+              currNode = currNode->east;
+              count = 0;
+            } else {
+              count++;
+            }
           }
         }
         break;
