@@ -325,7 +325,14 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
               count--;
             } else if (count <= 0 && currNode->east != NULL) {
               ImgNode* nextNode = currNode->east;
-              currPixel->h = fmin(fmod(currNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360), fmod(nextNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360));
+              double minAverage = fmin(fmod(currNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360), fmod(nextNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360));
+              double maxAverage = fmax(fmod(currNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360), fmod(nextNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360));
+              double epsilon = 0.01;
+              if (fabs(HueDiff(minAverage, currNode->colour.h) - HueDiff(minAverage, nextNode->colour.h)) < epsilon) {
+                currPixel->h = minAverage;
+              } else {
+                currPixel->h = maxAverage;
+              }
               currPixel->s = (currNode->colour.s + nextNode->colour.s) / 2;
               currPixel->l = (currNode->colour.l + nextNode->colour.l) / 2;
               currPixel->a = (currNode->colour.a + nextNode->colour.a) / 2;
@@ -333,7 +340,14 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
               count = currNode->skipright;
             } else if (currNode->east != NULL) {
               ImgNode* nextNode = currNode->east;
-              currPixel->h = fmin(fmod(currNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360), fmod(nextNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360));
+              double minAverage = fmin(fmod(currNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360), fmod(nextNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360));
+              double maxAverage = fmax(fmod(currNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360), fmod(nextNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360));
+              double epsilon = 0.01;
+              if (fabs(HueDiff(minAverage, currNode->colour.h) - HueDiff(minAverage, nextNode->colour.h)) < epsilon) {
+                currPixel->h = minAverage;
+              } else {
+                currPixel->h = maxAverage;
+              }
               currPixel->s = (currNode->colour.s + nextNode->colour.s) / 2;
               currPixel->l = (currNode->colour.l + nextNode->colour.l) / 2;
               currPixel->a = (currNode->colour.a + nextNode->colour.a) / 2;
