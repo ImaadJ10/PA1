@@ -331,7 +331,7 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
               currPixel->a = (currNode->colour.a + nextNode->colour.a) / 2.0;
               currNode = currNode->east;
               count = currNode->skipright;
-            } else {
+            } else if (currNode->east != NULL) {
               ImgNode* nextNode = currNode->east;
               currPixel->h = fmod(currNode->colour.h + nextNode->colour.h, 360) / 2.0;
               currPixel->s = (currNode->colour.s + nextNode->colour.s) / 2.0;
