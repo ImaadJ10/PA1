@@ -325,18 +325,32 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
               count--;
             } else if (count <= 0 && currNode->east != NULL) {
               ImgNode* nextNode = currNode->east;
-              currPixel->h = fmin(fmod(currNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2.0, 360), fmod(nextNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2.0, 360));
-              currPixel->s = (currNode->colour.s + nextNode->colour.s) / 2.0;
-              currPixel->l = (currNode->colour.l + nextNode->colour.l) / 2.0;
-              currPixel->a = (currNode->colour.a + nextNode->colour.a) / 2.0;
+              double minAverage = fmin(fmod(currNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360), fmod(nextNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360));
+              double maxAverage = fmax(fmod(currNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360), fmod(nextNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360));
+              double epsilon = 0.01;
+              if (fabs(HueDiff(minAverage, currNode->colour.h) - HueDiff(minAverage, nextNode->colour.h)) < epsilon) {
+                currPixel->h = minAverage;
+              } else {
+                currPixel->h = maxAverage;
+              }
+              currPixel->s = (currNode->colour.s + nextNode->colour.s) / 2;
+              currPixel->l = (currNode->colour.l + nextNode->colour.l) / 2;
+              currPixel->a = (currNode->colour.a + nextNode->colour.a) / 2;
               currNode = currNode->east;
               count = currNode->skipright;
             } else if (currNode->east != NULL) {
               ImgNode* nextNode = currNode->east;
-              currPixel->h = fmin(fmod(currNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2.0, 360), fmod(nextNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2.0, 360));
-              currPixel->s = (currNode->colour.s + nextNode->colour.s) / 2.0;
-              currPixel->l = (currNode->colour.l + nextNode->colour.l) / 2.0;
-              currPixel->a = (currNode->colour.a + nextNode->colour.a) / 2.0;
+              double minAverage = fmin(fmod(currNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360), fmod(nextNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360));
+              double maxAverage = fmax(fmod(currNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360), fmod(nextNode->colour.h + HueDiff(currNode->colour.h, nextNode->colour.h) / 2, 360));
+              double epsilon = 0.01;
+              if (fabs(HueDiff(minAverage, currNode->colour.h) - HueDiff(minAverage, nextNode->colour.h)) < epsilon) {
+                currPixel->h = minAverage;
+              } else {
+                currPixel->h = maxAverage;
+              }
+              currPixel->s = (currNode->colour.s + nextNode->colour.s) / 2;
+              currPixel->l = (currNode->colour.l + nextNode->colour.l) / 2;
+              currPixel->a = (currNode->colour.a + nextNode->colour.a) / 2;
               count--;
             }
           }
@@ -384,7 +398,7 @@ PNG ImgList::Render(bool fillgaps, int fillmode) const {
 *       the size of the gap.
 */
 void ImgList::Carve(int selectionmode) {
-  ImgNode* rowStart = this->northwest;
+  ImgNode* rowStart = northwest;
   ImgNode* curr;
   ImgNode* east;
   ImgNode* west;
@@ -435,8 +449,8 @@ void ImgList::Carve(int selectionmode) {
 */
 void ImgList::Carve(unsigned int rounds, int selectionmode) {
   unsigned int roundsRemaining;
-  if (rounds > this->GetDimensionX() - 2) {
-    roundsRemaining = this->GetDimensionX() - 2;
+  if (rounds > GetDimensionX() - 2) {
+    roundsRemaining = GetDimensionX() - 2;
   } else {
     roundsRemaining = rounds;
   }
@@ -456,23 +470,20 @@ void ImgList::Carve(unsigned int rounds, int selectionmode) {
 void ImgList::Clear() {
   if (northwest != NULL) {
     ImgNode* curr = northwest;
-    ImgNode* nextX = northwest->east;
-    unsigned int width = this->GetDimensionX();
-
-    for (unsigned int x = 0; x < width; x++) {
-      if (x > 0) {
-        curr = nextX;
-        nextX = nextX->east;
+    ImgNode* nextY = northwest->south;
+    unsigned int height = GetDimensionY();
+    
+    for (unsigned int y = 0; y < height; y++) {
+      if (y > 0) {
+        curr = nextY;
+        nextY = nextY->south;
       }
       while (curr != NULL) {
-          ImgNode* next = curr->south;
-          delete curr;
-          curr = next;
+        ImgNode* next = curr->east;
+        delete curr;
+        curr = next;
       }
     }
-
-    northwest = NULL;
-    southeast = NULL;
   }
 }
 
@@ -492,4 +503,3 @@ void ImgList::Copy(const ImgList& otherlist) {
 /*************************************************************************************************
 * IF YOU DEFINED YOUR OWN PRIVATE FUNCTIONS IN imglist.h, YOU MAY ADD YOUR IMPLEMENTATIONS BELOW *
 *************************************************************************************************/
-
